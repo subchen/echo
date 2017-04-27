@@ -385,6 +385,13 @@ func (c *context) String(code int, s string) (err error) {
 }
 
 func (c *context) JSON(code int, i interface{}) (err error) {
+	// jsonp check
+	query := c.request.URL.Query()
+	jsonpCallback := query.Get("callback")
+	if jsonpCallback != "" {
+		return c.JSONP(code, jsonpCallback, i)
+	}
+
 	if c.echo.Debug {
 		return c.JSONPretty(code, i, "  ")
 	}
@@ -396,6 +403,13 @@ func (c *context) JSON(code int, i interface{}) (err error) {
 }
 
 func (c *context) JSONPretty(code int, i interface{}, indent string) (err error) {
+	// jsonp check
+	query := c.request.URL.Query()
+	jsonpCallback := query.Get("callback")
+	if jsonpCallback != "" {
+		return c.JSONP(code, jsonpCallback, i)
+	}
+
 	b, err := json.MarshalIndent(i, "", indent)
 	if err != nil {
 		return
